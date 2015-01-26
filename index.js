@@ -111,6 +111,30 @@ function rememberAs(context, name) {
   };
 }
 
+/**
+ * ## Execute Stuff in Parallel
+ * @param  {Array} list  List of tasks (functions or promises) to execute
+ * @return {Function}    A function that takes applies the given data to the
+ *   tasks. Alternatively, when you also call `.then` on it, it starts
+ *   processing without any paramters.
+ *
+ * @example
+ * ```js
+ * // To start a chain:
+ * T.inParallel([
+ * 	 create(5, Shiny).entries,
+ * 	 create(5, Glorious).entries()
+ * ])
+ * .then(removeAllThatRubbish);
+ *
+ * // Inside a chain:
+ * T.create(1, Base).entry()
+ * .then(T.inParallel([
+ *   T.create(2, Thingy).entries(),
+ *   T.create(6, Entity).entries()
+ * ]));
+ * ```
+ */
 function doThis(list) {
   var process = function (parent) {
     var tasks;
@@ -127,20 +151,17 @@ function doThis(list) {
     return Promise.all(tasks);
   };
 
-  var initial;
-
-  initial = process;
+  var initial = process;
 
   initial.then = function () {
     return process();
   };
 
-  // initial.then = process;
-
   return initial;
 }
 
 // - - -
+// ## Exports
 
 module.exports = {
   create: create,
