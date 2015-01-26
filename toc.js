@@ -21,6 +21,16 @@ window.files = [
       "level": 2,
       "slug": "remember-my-data",
       "title": "Remember My Data"
+    },
+    {
+      "level": 2,
+      "slug": "execute-stuff-in-parallel",
+      "title": "Execute Stuff in Parallel"
+    },
+    {
+      "level": 2,
+      "slug": "exports",
+      "title": "Exports"
     }
   ]
 },
