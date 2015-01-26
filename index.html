@@ -41,7 +41,7 @@
 T.inParallel([
   T.create(<span class="hljs-number">1</span>, Thingy).entry(),
   T.create(<span class="hljs-number">3</span>, Entity).entries()
-   .then(rememberAs(<span class="hljs-string">'thingies'</span>, temp))
+   .then(T.rememberAs(<span class="hljs-string">'entries'</span>, temp))
    .then(T.forEach(T.create(<span class="hljs-number">2</span>, Foo).entries))
 ])
 .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(oneThingyAndSixFoos)</span> </span>{
