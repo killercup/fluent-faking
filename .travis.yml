@@ -1,15 +1,4 @@
 language: node_js
-node_js:
-  - '0.10'
 sudo: false
 script:
   - 'npm test'
-after_success: |
-  [ $TRAVIS_BRANCH = master ] &&
-  [ $TRAVIS_PULL_REQUEST = false ] &&
-  git config --global user.name "Travis CI" &&
-  git config --global user.email "travis@pascalhertleif.de" &&
-  grock --glob *.js --index README.md --github --git-remote https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-env:
-  global:
-    - secure: 'RApcDui9IpyEaewflPaWK1fXntm92IezCKFNIBi1bhgKLLJ3YDS3nxEQ4ZIyF360B7W1eRHiJH0Kh81C/vjkJRQFzkmNNQPnappamKu1MVDxwGzFujzqSpkE7oRoQwrxvIxz2cocKrdxvP0me5YgCS6XI9HaAds60SMVB67MoT0='

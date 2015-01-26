@@ -4,7 +4,8 @@
   "description": "Helper methods to fluently describe data generation",
   "main": "index.js",
   "scripts": {
-    "test": "eslint *.js && mocha --reporter spec tests.js"
+    "test": "eslint *.js && mocha --reporter spec tests.js",
+    "docs": "grock --glob '*.{js,md}'"
   },
   "repository": {
     "type": "git",
