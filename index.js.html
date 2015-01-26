@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Faking DSL - index.js</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+  <meta name="groc-relative-root" content=""/>
+  <meta name="groc-document-path" content="index.js"/>
+  
+</head>
+<body>
+  <div id="file-area">
+    <div id="meta">
+      <code class="file-path">
+      
+        index.js
+      
+      </code>
+    </div>
+    <div id="document">
+    
+      <div class="segment">
+      
+        <div class="comments ">
+          <div class="wrapper"><h1 id="data-faking-dsl"><a href="#data-faking-dsl" class="anchor"></a>Data Faking DSL</h1><p>Easily describe and create nested fake data. Very useful in tests.</p>
+<p>Let&#39;s say you want to create one thingy, three entities and two foos per
+entity:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> T = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./faking_dsl'</span>);
+
+T.inParallel([
+  T.create(<span class="hljs-number">1</span>, Thingy).entry(),
+  T.create(<span class="hljs-number">3</span>, Entity).entries()
+   .then(T.forEach(T.create(<span class="hljs-number">2</span>, Foo).entries))
+])
+</code></pre>
+<p>The only special thing here is that <code>Thingy</code>, <code>Entity</code> and <code>Foo</code> all have
+<code>.fake</code> methods that return promises. Those would look good own you own
+database models too, wouldn&#39;t they?</p>
+</div>
+        </div>
+      
+      
+        <div class="code"><div class="wrapper"><span class="hljs-keyword">var</span> Promise = <span class="hljs-built_in">require</span>(<span class="hljs-string">'bluebird'</span>);
+</div></div>
+      
+      </div>
+    
+      <div class="segment">
+      
+        <div class="comments doc-section">
+          <div class="wrapper"><h2 id="create-some-fakes"><a href="#create-some-fakes" class="anchor"></a>Create Some Fakes</h2><p>Parameters:</p>
+<ul>
+<li><strong><code>amount</code> must be a Number.</strong><br/>(Number of fakes to create)</li>
+<li><strong><code>entity</code> must be an Object.</strong><br/>(The entity to fake)<ul>
+<li><strong><code>entity.fake</code> must be a Function.</strong><br/>(Entity&#39;s fake method)</li>
+</ul>
+</li>
+<li><strong><code>extra</code> must be an Object.</strong><br/>(Default data, given to faking method)</li>
+<li><strong><code>mapOpts</code> must be an Object.</strong><br/>(Options for <code>Promise.map</code>)<ul>
+<li><strong><code>mapOpts.concurrency</code> must be an Object.</strong><br/>(Concurrency limit for <code>.fake</code> calls)</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns an Object</strong><br/>(Object with <code>.entries</code> method to continue the chain)</p>
+<p>Example:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> thingies = [];
+<span class="hljs-keyword">var</span> Thingy = {
+    fake: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+      thingies.push(opts);
+      <span class="hljs-keyword">return</span> Promise.resolve();
+    }
+};
+
+T.create(<span class="hljs-number">5</span>, Thingy).entries()
+.then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
+    <span class="hljs-comment">// =&gt; data is an array of 5 Thingy entries!</span>
+});
+</code></pre>
+</div>
+        </div>
+      
+      
+        <div class="code"><div class="wrapper"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span><span class="hljs-params">(amount, entity, extra, mapOpts)</span> {</span>
+  <span class="hljs-keyword">if</span> (!entity || <span class="hljs-keyword">typeof</span> entity.fake !== <span class="hljs-string">'function'</span>) {
+    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(
+      <span class="hljs-string">"`create` doesn't know how to fake this entity: "</span> + entity
+    )
+  }
+
+  <span class="hljs-keyword">var</span> process = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(parent, parentIndex)</span> {</span>
+    <span class="hljs-keyword">var</span> range = [];
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; amount; i++) {
+      range.push(i);
+    }
+
+    <span class="hljs-keyword">return</span> Promise.map(
+      range,
+      <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(index)</span> {</span>
+        <span class="hljs-keyword">var</span> opts;
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> extra === <span class="hljs-string">'function'</span>) {
+          opts = extra(index, parent, parentIndex);
+        } <span class="hljs-keyword">else</span> {
+          opts = extra;
+        }
+
+        <span class="hljs-keyword">return</span> entity.fake(opts);
+      },
+      mapOpts
+    );
+  };
+  <span class="hljs-keyword">return</span> {
+    entries: process,
+    entry: process
+  };
+}
+</div></div>
+      
+      </div>
+    
+      <div class="segment">
+      
+        <div class="comments doc-section">
+          <div class="wrapper"><h2 id="remember-my-data"><a href="#remember-my-data" class="anchor"></a>Remember My Data</h2><p>Parameters:</p>
+<ul>
+<li><strong><code>context</code> must be an Object.</strong><br/>(Object to store data on, e.g. test context)</li>
+<li><strong><code>name</code> must be a String.</strong><br/>(Property name to which data will be saved)</li>
+</ul>
+<p><strong>Returns a Function</strong><br/>(Adds data to context and returns the same data)</p>
+<p>Example:</p>
+<pre><code class="lang-js"><span class="hljs-keyword">var</span> temp = {};
+T.create(<span class="hljs-number">5</span>, Thingy).entries()
+.then(T.rememberAs(temp, <span class="hljs-string">'thingies'</span>));
+
+<span class="hljs-comment">// Use `bind` to create a shortcut</span>
+<span class="hljs-keyword">var</span> rememberAs = T.rememberAs.bind(<span class="hljs-literal">null</span>, temp);
+
+T.create(<span class="hljs-number">5</span>, Thingy).entries()
+.then(rememberAs(<span class="hljs-string">'thingies'</span>));
+</code></pre>
+</div>
+        </div>
+      
+      
+        <div class="code"><div class="wrapper"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rememberAs</span><span class="hljs-params">(context, name)</span> {</span>
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
+    context[name] = data;
+    <span class="hljs-keyword">return</span> data;
+  };
+}
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">doThis</span><span class="hljs-params">(list)</span> {</span>
+  <span class="hljs-keyword">var</span> process = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(parent)</span> {</span>
+    <span class="hljs-keyword">var</span> tasks;
+    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> parent === <span class="hljs-string">'undefined'</span>) {
+      tasks = list;
+    } <span class="hljs-keyword">else</span> {
+      tasks = list.map(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(task)</span> {</span>
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> task === <span class="hljs-string">'function'</span>) {
+          <span class="hljs-keyword">return</span> task(parent);
+        }
+        <span class="hljs-keyword">return</span> task;
+      });
+    }
+    <span class="hljs-keyword">return</span> Promise.all(tasks);
+  };
+
+  <span class="hljs-keyword">var</span> initial;
+
+  initial = process;
+
+  initial.then = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+    <span class="hljs-keyword">return</span> process();
+  };
+</div></div>
+      
+      </div>
+    
+      <div class="segment">
+      
+        <div class="comments ">
+          <div class="wrapper"><p>initial.then = process;</p>
+</div>
+        </div>
+      
+      
+        <div class="code"><div class="wrapper">  <span class="hljs-keyword">return</span> initial;
+}
+</div></div>
+      
+      </div>
+    
+      <div class="segment">
+      
+        <div class="comments ">
+          <div class="wrapper"><hr>
+</div>
+        </div>
+      
+      
+        <div class="code"><div class="wrapper">module.exports = {
+  create: create,
+  inParallel: doThis,
+  forEach: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(fn)</span> {</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(list)</span> {</span>
+      <span class="hljs-keyword">return</span> list.map(fn);
+    };
+  },
+  forTheFirst: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(fn)</span> {</span>
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(list)</span> {</span>
+      <span class="hljs-keyword">return</span> fn(list[<span class="hljs-number">0</span>]);
+    };
+  },
+  rememberAs: rememberAs
+};
+</div></div>
+      
+      </div>
+    
+    </div>
+  </div>
+
+  <script src="toc.js"></script>
+  <script src="assets/libs.js"></script>
+  <script src="assets/behavior.js"></script>
+</body>
+</html>
