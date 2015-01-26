@@ -14,7 +14,7 @@ var temp = {};
 T.inParallel([
   T.create(1, Thingy).entry(),
   T.create(3, Entity).entries()
-   .then(rememberAs('thingies', temp))
+   .then(T.rememberAs('entries', temp))
    .then(T.forEach(T.create(2, Foo).entries))
 ])
 .then(function (oneThingyAndSixFoos) {
