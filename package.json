@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "eslint *.js && mocha --reporter spec tests.js",
-    "docs": "grock --glob '*.{js,md}'"
+    "docs": "grock --glob '*.{js,md}' --index README.md"
   },
   "repository": {
     "type": "git",
