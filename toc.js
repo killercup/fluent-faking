@@ -33,10 +33,10 @@ window.files = [
   "toc": []
 },
 {
-  "path": "README.md.html",
+  "path": "index.html",
   "originalName": "README.md",
   "originalPath": "README.md",
-  "name": "README.md.html",
+  "name": "index.html",
   "title": "fluent-faking",
   "toc": [
     {
