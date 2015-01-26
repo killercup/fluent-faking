@@ -2,6 +2,8 @@
 
 Helper methods to fluently describe data generation (CommonJS)
 
+[![Build Status](https://travis-ci.org/killercup/fluent-faking.svg?branch=master)](https://travis-ci.org/killercup/fluent-faking)
+
 ## Example
 
 ```js
