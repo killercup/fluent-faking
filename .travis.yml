@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+  - '0.10'
+script:
+  - 'npm test'
+  - 'grock --glob *.js --index README.md'
+after_success: |
+  [ $TRAVIS_BRANCH = master ] &&
+  [ $TRAVIS_PULL_REQUEST = false ] &&
+  grock --glob *.js --index README.md --github --git-remote https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+env:
+  global:
+    - secure: 'RApcDui9IpyEaewflPaWK1fXntm92IezCKFNIBi1bhgKLLJ3YDS3nxEQ4ZIyF360B7W1eRHiJH0Kh81C/vjkJRQFzkmNNQPnappamKu1MVDxwGzFujzqSpkE7oRoQwrxvIxz2cocKrdxvP0me5YgCS6XI9HaAds60SMVB67MoT0='
