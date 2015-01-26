@@ -1,0 +1,35 @@
+{
+  "name": "fluent-faking",
+  "version": "0.1.0",
+  "description": "Helper methods to fluently describe data generation",
+  "main": "index.js",
+  "scripts": {
+    "test": "eslint *.js && mocha --reporter spec tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:killercup/fluent-faking.git"
+  },
+  "keywords": [
+    "faking",
+    "fluent interface",
+    "test",
+    "data modelling"
+  ],
+  "author": "Pascal Hertleif <killercup@gmail.com> (http://pascalhertleif.de/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/killercup/fluent-faking/issues"
+  },
+  "homepage": "https://killercup.github.io/fluent-faking",
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "eslint": "^0.13.0",
+    "eslint-plugin-mocha": "^0.2.2",
+    "eslint-plugin-nodeca": "^1.0.3",
+    "mocha": "^2.1.0"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.2"
+  }
+}
