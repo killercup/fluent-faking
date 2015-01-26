@@ -3,10 +3,11 @@ node_js:
   - '0.10'
 script:
   - 'npm test'
-  - 'grock --glob *.js --index README.md'
 after_success: |
   [ $TRAVIS_BRANCH = master ] &&
   [ $TRAVIS_PULL_REQUEST = false ] &&
+  git config --global user.name "Travis CI" &&
+  git config --global user.email "travis@pascalhertleif.de" &&
   grock --glob *.js --index README.md --github --git-remote https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
 env:
   global:
