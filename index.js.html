@@ -5,6 +5,13 @@
   <title>Data Faking DSL - index.js</title>
 
   <link rel="stylesheet" href="assets/style.css">
+  
+    
+      <style>
+        
+      </style>
+    
+  
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
   <meta name="groc-relative-root" content=""/>
@@ -68,14 +75,14 @@ database models too, wouldn&#39;t they?</p>
 <p>Example:</p>
 <pre><code class="lang-js"><span class="hljs-keyword">var</span> thingies = [];
 <span class="hljs-keyword">var</span> Thingy = {
-    fake: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+    fake: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
       thingies.push(opts);
       <span class="hljs-keyword">return</span> Promise.resolve();
     }
 };
 
 T.create(<span class="hljs-number">5</span>, Thingy).entries()
-.then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
+.then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> </span>{
     <span class="hljs-comment">// =&gt; data is an array of 5 Thingy entries!</span>
 });
 </code></pre>
@@ -83,14 +90,14 @@ T.create(<span class="hljs-number">5</span>, Thingy).entries()
         </div>
       
       
-        <div class="code"><div class="wrapper"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span><span class="hljs-params">(amount, entity, extra, mapOpts)</span> {</span>
+        <div class="code"><div class="wrapper"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span><span class="hljs-params">(amount, entity, extra, mapOpts)</span> </span>{
   <span class="hljs-keyword">if</span> (!entity || <span class="hljs-keyword">typeof</span> entity.fake !== <span class="hljs-string">'function'</span>) {
     <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(
       <span class="hljs-string">"`create` doesn't know how to fake this entity: "</span> + entity
     )
   }
 
-  <span class="hljs-keyword">var</span> process = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(parent, parentIndex)</span> {</span>
+  <span class="hljs-keyword">var</span> process = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(parent, parentIndex)</span> </span>{
     <span class="hljs-keyword">var</span> range = [];
     <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; amount; i++) {
       range.push(i);
@@ -98,7 +105,7 @@ T.create(<span class="hljs-number">5</span>, Thingy).entries()
 
     <span class="hljs-keyword">return</span> Promise.map(
       range,
-      <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(index)</span> {</span>
+      <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(index)</span> </span>{
         <span class="hljs-keyword">var</span> opts;
         <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> extra === <span class="hljs-string">'function'</span>) {
           opts = extra(index, parent, parentIndex);
@@ -144,20 +151,20 @@ T.create(<span class="hljs-number">5</span>, Thingy).entries()
         </div>
       
       
-        <div class="code"><div class="wrapper"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rememberAs</span><span class="hljs-params">(context, name)</span> {</span>
-  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> {</span>
+        <div class="code"><div class="wrapper"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">rememberAs</span><span class="hljs-params">(context, name)</span> </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> </span>{
     context[name] = data;
     <span class="hljs-keyword">return</span> data;
   };
 }
 
-<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">doThis</span><span class="hljs-params">(list)</span> {</span>
-  <span class="hljs-keyword">var</span> process = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(parent)</span> {</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">doThis</span><span class="hljs-params">(list)</span> </span>{
+  <span class="hljs-keyword">var</span> process = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(parent)</span> </span>{
     <span class="hljs-keyword">var</span> tasks;
     <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> parent === <span class="hljs-string">'undefined'</span>) {
       tasks = list;
     } <span class="hljs-keyword">else</span> {
-      tasks = list.map(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(task)</span> {</span>
+      tasks = list.map(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(task)</span> </span>{
         <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> task === <span class="hljs-string">'function'</span>) {
           <span class="hljs-keyword">return</span> task(parent);
         }
@@ -171,7 +178,7 @@ T.create(<span class="hljs-number">5</span>, Thingy).entries()
 
   initial = process;
 
-  initial.then = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> {</span>
+  initial.then = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
     <span class="hljs-keyword">return</span> process();
   };
 </div></div>
@@ -200,16 +207,16 @@ T.create(<span class="hljs-number">5</span>, Thingy).entries()
         </div>
       
       
-        <div class="code"><div class="wrapper">module.exports = {
+        <div class="code"><div class="wrapper"><span class="hljs-built_in">module</span>.exports = {
   create: create,
   inParallel: doThis,
-  forEach: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(fn)</span> {</span>
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(list)</span> {</span>
+  forEach: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(fn)</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(list)</span> </span>{
       <span class="hljs-keyword">return</span> list.map(fn);
     };
   },
-  forTheFirst: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(fn)</span> {</span>
-    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(list)</span> {</span>
+  forTheFirst: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(fn)</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(list)</span> </span>{
       <span class="hljs-keyword">return</span> fn(list[<span class="hljs-number">0</span>]);
     };
   },
@@ -225,5 +232,13 @@ T.create(<span class="hljs-number">5</span>, Thingy).entries()
   <script src="toc.js"></script>
   <script src="assets/libs.js"></script>
   <script src="assets/behavior.js"></script>
+
+  
+    
+      <script>
+        
+      </script>
+    
+  
 </body>
 </html>

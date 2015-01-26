@@ -23,5 +23,37 @@ window.files = [
       "title": "Remember My Data"
     }
   ]
+},
+{
+  "path": "tests.js.html",
+  "originalName": "tests.js",
+  "originalPath": "tests.js",
+  "name": "tests.js.html",
+  "lang": "javascript",
+  "toc": []
+},
+{
+  "path": "index.html",
+  "originalName": "Readme.md",
+  "originalPath": "Readme.md",
+  "name": "index.html",
+  "title": "fluent-faking",
+  "toc": [
+    {
+      "level": 1,
+      "slug": "fluent-faking",
+      "title": "fluent-faking"
+    },
+    {
+      "level": 2,
+      "slug": "example",
+      "title": "Example"
+    },
+    {
+      "level": 2,
+      "slug": "license",
+      "title": "License"
+    }
+  ]
 }
 ];

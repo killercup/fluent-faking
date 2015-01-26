@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> - tests.js</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+  
+    
+      <style>
+        
+      </style>
+    
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+  <meta name="groc-relative-root" content=""/>
+  <meta name="groc-document-path" content="tests.js"/>
+  
+</head>
+<body>
+  <div id="file-area">
+    <div id="meta">
+      <code class="file-path">
+      
+        tests.js
+      
+      </code>
+    </div>
+    <div id="document">
+    
+      <div class="segment">
+      
+      
+        <div class="code"><div class="wrapper"><span class="hljs-keyword">var</span> expect = <span class="hljs-built_in">require</span>(<span class="hljs-string">'chai'</span>).expect;
+<span class="hljs-keyword">var</span> Promise = <span class="hljs-built_in">require</span>(<span class="hljs-string">'bluebird'</span>);
+
+<span class="hljs-keyword">var</span> T = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./index'</span>);
+
+describe(<span class="hljs-string">"Faking DSL"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">newEntity</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">var</span> thingies = [];
+    <span class="hljs-keyword">return</span> {
+      fake: <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(opts)</span> </span>{
+        opts = opts || {};
+        thingies.push(opts);
+        <span class="hljs-keyword">return</span> Promise.resolve(opts);
+      },
+      all: thingies
+    };
+  }
+
+  describe(<span class="hljs-string">"crate"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    it(<span class="hljs-string">"can create stuff"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> Entity = newEntity();
+
+      <span class="hljs-keyword">return</span> (
+        T.create(<span class="hljs-number">5</span>, Entity).entries()
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        expect(Entity.all).to.have.length(<span class="hljs-number">5</span>);
+      });
+    });
+
+    it(<span class="hljs-string">"fails with entities that don't specify a `fake` method"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      expect(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> T.create(<span class="hljs-number">5</span>, <span class="hljs-built_in">Error</span>);
+      }).to.throw();
+    });
+  });
+
+  describe(<span class="hljs-string">"remembers"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    it(<span class="hljs-string">"created stuff in the test context"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> context = <span class="hljs-keyword">this</span>;
+      <span class="hljs-keyword">var</span> Thingy = newEntity();
+
+      <span class="hljs-keyword">var</span> rememberAs = T.rememberAs.bind(<span class="hljs-literal">null</span>, context);
+
+      <span class="hljs-keyword">return</span> (
+        T.create(<span class="hljs-number">5</span>, Thingy).entries()
+        .then(rememberAs(<span class="hljs-string">'thingies'</span>))
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(data)</span> </span>{
+        expect(context.thingies).to.exist();
+        expect(context.thingies).to.eql(Thingy.all);
+      });
+    });
+  });
+
+  describe(<span class="hljs-string">"in parallel"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    it(<span class="hljs-string">"parallelizes tasks"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> Thingy = newEntity();
+      <span class="hljs-keyword">var</span> Entity = newEntity();
+
+      <span class="hljs-keyword">return</span> (
+        T.inParallel([
+          T.create(<span class="hljs-number">1</span>, Thingy).entry(),
+          T.create(<span class="hljs-number">3</span>, Entity).entries()
+        ])
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        expect(Thingy.all).to.have.length(<span class="hljs-number">1</span>);
+        expect(Entity.all).to.have.length(<span class="hljs-number">3</span>);
+      });
+    });
+
+    it(<span class="hljs-string">"works as second step"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> Base = newEntity();
+      <span class="hljs-keyword">var</span> Thingy = newEntity();
+      <span class="hljs-keyword">var</span> Entity = newEntity();
+
+      <span class="hljs-keyword">return</span> (
+        T.create(<span class="hljs-number">1</span>, Base).entry()
+        .then(T.inParallel([
+          T.create(<span class="hljs-number">2</span>, Thingy).entries(),
+          T.create(<span class="hljs-number">6</span>, Entity).entries()
+        ]))
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        expect(Base.all).to.have.length(<span class="hljs-number">1</span>);
+        expect(Thingy.all).to.have.length(<span class="hljs-number">2</span>);
+        expect(Entity.all).to.have.length(<span class="hljs-number">6</span>);
+      });
+    });
+
+    it(<span class="hljs-string">"works as second step and passes down the data"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> Base = newEntity();
+      <span class="hljs-keyword">var</span> Thingy = newEntity();
+      <span class="hljs-keyword">var</span> Entity = newEntity();
+
+      <span class="hljs-keyword">var</span> saved;
+      <span class="hljs-keyword">var</span> save = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(index, data)</span> </span>{
+        saved = data[<span class="hljs-number">0</span>];
+      };
+
+      <span class="hljs-keyword">var</span> BASE_DATA = {awesomeness: {level: <span class="hljs-number">42</span>}};
+
+      <span class="hljs-keyword">return</span> (
+        T.create(<span class="hljs-number">1</span>, Base, BASE_DATA).entry()
+        .then(T.inParallel([
+          T.create(<span class="hljs-number">2</span>, Thingy).entries,
+          T.create(<span class="hljs-number">6</span>, Entity, save).entries
+        ]))
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        expect(Base.all).to.have.length(<span class="hljs-number">1</span>);
+        expect(Thingy.all).to.have.length(<span class="hljs-number">2</span>);
+        expect(Entity.all).to.have.length(<span class="hljs-number">6</span>);
+
+        expect(saved).to.eql(BASE_DATA);
+      });
+    });
+  });
+
+  describe(<span class="hljs-string">"for each in chain"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    it(<span class="hljs-string">"does something"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> Author = newEntity();
+      <span class="hljs-keyword">var</span> Post = newEntity();
+
+      <span class="hljs-keyword">return</span> (
+        T.create(<span class="hljs-number">2</span>, Author).entries()
+        .then(T.forEach(T.create(<span class="hljs-number">5</span>, Post).entries))
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        expect(Author.all).to.have.length(<span class="hljs-number">2</span>);
+        expect(Post.all).to.have.length(<span class="hljs-number">2</span> * <span class="hljs-number">5</span>);
+      });
+    });
+  });
+
+  describe(<span class="hljs-string">"for the first in chain"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    it(<span class="hljs-string">"does something"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> Author = newEntity();
+      <span class="hljs-keyword">var</span> Award = newEntity();
+
+      <span class="hljs-keyword">return</span> (
+        T.create(<span class="hljs-number">5</span>, Author).entries()
+        .then(T.forTheFirst(T.create(<span class="hljs-number">1</span>, Award).entry))
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        expect(Author.all).to.have.length(<span class="hljs-number">5</span>);
+        expect(Award.all).to.have.length(<span class="hljs-number">1</span>);
+      });
+    });
+  });
+
+  describe(<span class="hljs-string">"complex chains"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+    it(<span class="hljs-string">"work flawlessly"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> Thingy = newEntity();
+      <span class="hljs-keyword">var</span> Entity = newEntity();
+      <span class="hljs-keyword">var</span> Stuff = newEntity();
+
+      <span class="hljs-keyword">return</span> (
+        T.inParallel([
+          T.create(<span class="hljs-number">1</span>, Thingy).entry(),
+          T.create(<span class="hljs-number">3</span>, Entity).entries()
+            .then(T.forEach(T.create(<span class="hljs-number">2</span>, Stuff).entries))
+        ])
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        expect(Thingy.all).to.have.length(<span class="hljs-number">1</span>);
+        expect(Entity.all).to.have.length(<span class="hljs-number">3</span>);
+        expect(Stuff.all).to.have.length(<span class="hljs-number">3</span> * <span class="hljs-number">2</span>);
+      });
+    });
+
+    it(<span class="hljs-string">"allow usage of custom functions"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">var</span> Admin = newEntity();
+      <span class="hljs-keyword">var</span> Author = newEntity();
+      <span class="hljs-keyword">var</span> Post = newEntity();
+      <span class="hljs-keyword">var</span> withUniqId = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">var</span> id = <span class="hljs-number">1</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{ id += <span class="hljs-number">1</span>; <span class="hljs-keyword">return</span> {id: id}; };
+      };
+      <span class="hljs-keyword">var</span> forAuthor = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(index, author, authorIndex)</span> </span>{
+        <span class="hljs-keyword">return</span> {author: author.id};
+      };
+
+      <span class="hljs-keyword">return</span> (
+        T.inParallel([
+          T.create(<span class="hljs-number">1</span>, Admin).entry(),
+          T.create(<span class="hljs-number">3</span>, Author, withUniqId()).entries()
+            .then(T.forEach(T.create(<span class="hljs-number">2</span>, Post, forAuthor).entries))
+        ])
+      )
+      .then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">()</span> </span>{
+        expect(Admin.all).to.have.length(<span class="hljs-number">1</span>);
+        expect(Author.all).to.have.length(<span class="hljs-number">3</span>);
+        expect(Post.all).to.have.length(<span class="hljs-number">3</span> * <span class="hljs-number">2</span>);
+
+        Author.all.forEach(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(author)</span> </span>{
+          expect(
+            Post.all.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(post)</span> </span>{
+              <span class="hljs-keyword">return</span> post.author === author.id;
+            })
+          ).to.have.length(<span class="hljs-number">2</span>);
+        });
+      });
+    });
+  });
+});
+</div></div>
+      
+      </div>
+    
+    </div>
+  </div>
+
+  <script src="toc.js"></script>
+  <script src="assets/libs.js"></script>
+  <script src="assets/behavior.js"></script>
+
+  
+    
+      <script>
+        
+      </script>
+    
+  
+</body>
+</html>

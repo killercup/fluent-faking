@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>fluent-faking - Readme.md</title>
+
+  <link rel="stylesheet" href="assets/style.css">
+  
+    
+      <style>
+        
+      </style>
+    
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0"/>
+  <meta name="groc-relative-root" content=""/>
+  <meta name="groc-document-path" content="Readme.md"/>
+  
+</head>
+<body>
+  <div id="file-area">
+    <div id="meta">
+      <code class="file-path">
+      
+        Readme.md
+      
+      </code>
+    </div>
+    <div id="document">
+    
+      <div class="segment">
+      
+        <div class="comments ">
+          <div class="wrapper"><h1 id="fluent-faking"><a href="#fluent-faking" class="anchor"></a>fluent-faking</h1><p>Helper methods to fluently describe data generation (CommonJS)</p>
+<h2 id="example"><a href="#example" class="anchor"></a>Example</h2><pre><code class="lang-js"><span class="hljs-keyword">var</span> Thingy, Entity, Foo; <span class="hljs-comment">// each has a `.fake` method</span>
+<span class="hljs-keyword">var</span> T = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./faking_dsl'</span>);
+<span class="hljs-keyword">var</span> temp = {};
+
+T.inParallel([
+  T.create(<span class="hljs-number">1</span>, Thingy).entry(),
+  T.create(<span class="hljs-number">3</span>, Entity).entries()
+   .then(rememberAs(<span class="hljs-string">'thingies'</span>, temp))
+   .then(T.forEach(T.create(<span class="hljs-number">2</span>, Foo).entries))
+])
+.then(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-params">(oneThingyAndSixFoos)</span> </span>{
+  <span class="hljs-comment">// ...</span>
+})
+</code></pre>
+<h2 id="license"><a href="#license" class="anchor"></a>License</h2><p>MIT</p>
+</div>
+        </div>
+      
+      
+      </div>
+    
+    </div>
+  </div>
+
+  <script src="toc.js"></script>
+  <script src="assets/libs.js"></script>
+  <script src="assets/behavior.js"></script>
+
+  
+    
+      <script>
+        
+      </script>
+    
+  
+</body>
+</html>
